@@ -16,7 +16,7 @@ public class Plugin : BaseUnityPlugin {
   private void Awake() {
     Logger = base.Logger;
 
-    levelNumConfig = Config.Bind(null, "Seed", -1, "Seed that gets loaded. (-1 = daily, 0 to 13 for valid levels)");
+    levelNumConfig = Config.Bind("General", "Seed", -1, "Seed that gets loaded. (-1 = daily, 0 to 13 for valid levels)");
     levelNum = levelNumConfig.Value;
     
     Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
