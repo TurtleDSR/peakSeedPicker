@@ -13,11 +13,11 @@ namespace peakseedpicker;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin {
   public enum LevelChoice {
-    level_0 = 0, level_1 = 1, level_2 = 2,
+    daily = -1, level_0 = 0, level_1 = 1, level_2 = 2,
     level_3 = 3, level_4 = 4, level_5 = 5,
     level_6 = 6, level_7 = 7, level_8 = 8,
     level_9 = 9, level_10 = 10, level_11 = 11,
-    level_12 = 12, level_13 = 13, daily = 14
+    level_12 = 12, level_13 = 13
   }
 
   internal static new ManualLogSource Logger;
@@ -66,7 +66,7 @@ public class Plugin : BaseUnityPlugin {
 
     style.normal.textColor = Color.white;
 
-    GUI.Label(new Rect(overlayPos.x, overlayPos.y, 200, 30),(level != LevelChoice.daily) ? $"level_{(int) level}" : "Daily", style);
+    GUI.Label(new Rect(overlayPos.x, overlayPos.y, 200, 30), level.ToString(), style);
   }
 
   private static void PatchMapBaker() {
