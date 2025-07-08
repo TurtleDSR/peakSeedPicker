@@ -13,11 +13,11 @@ namespace peakseedpicker;
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin {
   public enum LevelChoice {
-    daily = -1, level_0 = 0, level_1 = 1, level_2 = 2,
+    level_0 = 0, level_1 = 1, level_2 = 2,
     level_3 = 3, level_4 = 4, level_5 = 5,
     level_6 = 6, level_7 = 7, level_8 = 8,
     level_9 = 9, level_10 = 10, level_11 = 11,
-    level_12 = 12, level_13 = 13
+    level_12 = 12, level_13 = 13, daily = 14
   }
 
   internal static new ManualLogSource Logger;
