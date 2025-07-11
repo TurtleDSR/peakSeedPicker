@@ -30,12 +30,14 @@ public class Plugin : BaseUnityPlugin {
   internal static Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
   public static ConfigEntry<LevelChoice> levelConfig;
   public static LevelChoice level; //0 to 13
-  public static Vector2 overlayPos = new Vector2(1710, 10);
+  public static Vector2 overlayPos;
 
   public static bool timerActive;
 
   private void Awake() {
     Logger = base.Logger;
+    
+    overlayPos = new Vector2(Screen.currentResolution.width - 210, 10);
 
     levelConfig = Config.Bind("General", "Seed", LevelChoice.daily, "Seed that gets loaded, Versions prior to 1.7.a only have level_0 to level_13, any other value will be counted as daily");
     level = levelConfig.Value;
@@ -50,7 +52,7 @@ public class Plugin : BaseUnityPlugin {
   private void Start() {
     if(Chainloader.PluginInfos.ContainsKey("com.turtledsr.peaktimer")) {
       Logger.LogInfo("PeakTimer Found. Moving UI");
-      overlayPos = new Vector2(1710, 40);
+      overlayPos.y = 40;
       timerActive = true;
     }
 
@@ -66,7 +68,7 @@ public class Plugin : BaseUnityPlugin {
       fontStyle = FontStyle.Bold,
     };
 
-    if(!timerActive) style.alignment = TextAnchor.UpperRight;
+    if(!timerActive) style.alignment = TextAnchor.MiddleRight;
 
     style.normal.textColor = Color.white;
 
