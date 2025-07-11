@@ -1,5 +1,4 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -17,8 +16,15 @@ public class Plugin : BaseUnityPlugin {
     level_3 = 3, level_4 = 4, level_5 = 5,
     level_6 = 6, level_7 = 7, level_8 = 8,
     level_9 = 9, level_10 = 10, level_11 = 11,
-    level_12 = 12, level_13 = 13, daily = 14
+    level_12 = 12, level_13 = 13, level_14 = 14, 
+    level_15 = 15, level_16 = 16, level_17 = 17,
+    level_18 = 18, level_19 = 19, level_20 = 20,
+    daily = 21
   }
+
+  public static Version version;
+
+  public static Version v1dot7 = new Version("1.7.a");
 
   internal static new ManualLogSource Logger;
   internal static Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
@@ -28,12 +34,10 @@ public class Plugin : BaseUnityPlugin {
 
   public static bool timerActive;
 
-  public static int versionSmall;
-
   private void Awake() {
     Logger = base.Logger;
 
-    levelConfig = Config.Bind("General", "Seed", LevelChoice.daily, "Seed that gets loaded");
+    levelConfig = Config.Bind("General", "Seed", LevelChoice.daily, "Seed that gets loaded, Versions prior to 1.7.a only have level_0 to level_13, any other value will be counted as daily");
     level = levelConfig.Value;
 
     levelConfig.SettingChanged += delegate { //update value when config changes
@@ -50,7 +54,7 @@ public class Plugin : BaseUnityPlugin {
       timerActive = true;
     }
 
-    versionSmall = Convert.ToInt32(Application.version.TrimStart('.').Split(".")[1]);
+    version = new Version(Application.version);
     PatchMapBaker();
 
     Logger.LogInfo($"Using version: {Application.version}");
@@ -66,11 +70,11 @@ public class Plugin : BaseUnityPlugin {
 
     style.normal.textColor = Color.white;
 
-    GUI.Label(new Rect(overlayPos.x, overlayPos.y, 200, 30), level.ToString(), style);
+    GUI.Label(new Rect(overlayPos.x, overlayPos.y, 200, 30), (version < v1dot7 && (int) level > 13) ? "daily" : level.ToString(), style);
   }
 
   private static void PatchMapBaker() {
-    if(versionSmall >= 6) {
+    if(version >= new Version("1.6.a")) {
       Logger.LogInfo("Patched for 1.6.x+");
       harmony.PatchAll(typeof(MapBaker_GetLevel_v1dot6_plus_Patch));
     } else {
@@ -82,7 +86,7 @@ public class Plugin : BaseUnityPlugin {
   [HarmonyPatch(typeof(MapBaker), "GetLevel")]
   static class MapBaker_GetLevel_v1dot6_plus_Patch {
     static bool Prefix(MapBaker __instance, ref string __result) {
-      if(level == LevelChoice.daily) {
+      if(level == LevelChoice.daily || (version < v1dot7 && (int) level > 13)) {
         return true;
       }
       Logger.LogInfo("Using v1.6.x+ Level-Loader");
@@ -94,7 +98,7 @@ public class Plugin : BaseUnityPlugin {
   [HarmonyPatch(typeof(MapBaker), "GetLevel")]
   static class MapBaker_GetLevel_PRE_v1dot6_Patch {
     static bool Prefix(MapBaker __instance, ref string __result) {
-      if(level == LevelChoice.daily) {
+      if(level == LevelChoice.daily || (version < v1dot7 && (int) level > 13)) {
         return true;
       }
       Logger.LogInfo("Using PRE-v1.6.x Level-Loader");
