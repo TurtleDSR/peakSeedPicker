@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -77,11 +78,28 @@ public class Plugin : BaseUnityPlugin {
 
   private static void PatchMapBaker() {
     if(version >= new Version("1.6.a")) {
-      Logger.LogInfo("Patched for 1.6.x+");
-      harmony.PatchAll(typeof(MapBaker_GetLevel_v1dot6_plus_Patch));
+      if(version >= new Version("1.54.a")) {
+        Logger.LogInfo("Patched for 1.54.x+");
+        harmony.PatchAll(typeof(MapBaker_GetLevel_v1dot54_plus_Patch));
+      } else {
+        Logger.LogInfo("Patched for 1.6.x+");
+        harmony.PatchAll(typeof(MapBaker_GetLevel_v1dot6_plus_Patch)); 
+      }
     } else {
       Logger.LogInfo("Patched for PRE-1.6.x");
       harmony.PatchAll(typeof(MapBaker_GetLevel_PRE_v1dot6_Patch));
+    }
+  }
+
+  [HarmonyPatch(typeof(MapBaker), "GetLevel")]
+  static class MapBaker_GetLevel_v1dot54_plus_Patch {
+    static bool Prefix(MapBaker __instance, ref string __result) {
+      if(level == LevelChoice.daily || (version < v1dot7 && (int) level > 13)) {
+        return true;
+      }
+      Logger.LogInfo("Using v1.54.x+ Level-Loader");
+      __result = PathUtil.WithoutExtensions(PathUtil.WithoutExtensions(PathUtil.GetFileName(((string[]) __instance.GetType().GetField("ScenePaths").GetValue(__instance))[(int) level])));
+      return false;
     }
   }
 
